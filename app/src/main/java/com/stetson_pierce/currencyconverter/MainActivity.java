@@ -9,6 +9,8 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -137,18 +139,21 @@ public class MainActivity extends AppCompatActivity {
     public void convertCurrency(double convertingNum, double exchangeRate, String initialSymbol,
                                 String exchangeSymbol) {
         double convertedAmount = convertingNum * exchangeRate;
-        toastConvertedAmt(initialSymbol, convertedAmount);
-        updateRecentConversions(initialSymbol + convertingNum, exchangeSymbol + convertedAmount);
+
+        DecimalFormat df = new DecimalFormat("#.##");
+        df.setRoundingMode(RoundingMode.CEILING);
+
+        toastConvertedAmt(initialSymbol, df.format(convertedAmount));
+        updateRecentConversions(initialSymbol + convertingNum, exchangeSymbol + df.format(convertedAmount));
     }
 
-    public void toastConvertedAmt(String symbol, double myNum) {
+    public void toastConvertedAmt(String symbol, String myNum) {
         Toast.makeText(getApplicationContext(),
                 symbol + String.valueOf(myNum),
                 Toast.LENGTH_LONG).show();
     }
 
     public void updateRecentConversions(String initial, String converted){
-        // Test updating the Recent Conversions
         arrRecentConversionsList.add(initial + " = " + converted);
         recentConversionsAdapter.notifyDataSetChanged();
     }
