@@ -1,23 +1,27 @@
 package com.stetson_pierce.currencyconverter;
 
-import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
 
-    // Grab both spinners
+    // Delcare Views to be used in multiple methods
     Spinner spinnerLeft;
     Spinner spinnerRight;
+    ListView recentConversionsView;
+    ArrayList<String> arrRecentConversionsList;
+    ArrayAdapter<String> recentConversionsAdapter;
 
-    // Constants
+    // Constants for easy comparison and code readability
     public final String DEFAULT = "Select Currency";
     public final String USD = "$ - Dollars (USD)";
     public final String GBP = "£ - Pounds (GBP)";
@@ -29,26 +33,51 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Custom code
-        // Grab the spinners
+
+        /*
+         *  Recent selection ListView setup
+         */
+
+        // Grab the ListView
+        recentConversionsView = (ListView) findViewById(R.id.recentConvertions);
+
+        // Initialize ListView
+        arrRecentConversionsList = new ArrayList<>();
+
+        // Create an ArrayAdapter with recentConversions
+        recentConversionsAdapter =
+                new ArrayAdapter<>(this,
+                        android.R.layout.simple_list_item_1,
+                        arrRecentConversionsList);
+
+        // Add the ArrayAdapter to the ListView
+        recentConversionsView.setAdapter(recentConversionsAdapter);
+
+        /*
+         *  Selection Spinner(s) setup
+         */
+
+        // Grab the selection Spinner(s)
         spinnerLeft = (Spinner) findViewById(R.id.currencySelection1);
         spinnerRight = (Spinner) findViewById(R.id.currencySelection2);
 
-        // Create an array adapter with arraylist created in Strings.xml
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.country_currencies, R.layout.support_simple_spinner_dropdown_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Currency values used for selection Spinners
+        ArrayList<String> currencies =
+                new ArrayList<>(Arrays.asList(DEFAULT, USD, GBP, EUR));
 
-        // Add the adapter to the Spinners
-        spinnerLeft.setAdapter(adapter);
-        spinnerRight.setAdapter(adapter);
+        // Create an ArrayAdapter with currencies ArrayList
+        ArrayAdapter<String> currencyAdapter =
+                new ArrayAdapter<>(this,                // this refers to the app context
+                android.R.layout.simple_list_item_1,
+                currencies);
 
-        // Code for ListView
-
-
+        // Add the ArrayAdapter to the selection Spinner(s)
+        spinnerLeft.setAdapter(currencyAdapter);
+        spinnerRight.setAdapter(currencyAdapter);
     }
 
     // Method called when button is pressed
-    public void convertCurrency(View view) {
+    public void onClick(View view) {
         // Check if there is any reason math cannot be performed
         EditText numToConvert = (EditText) findViewById(R.id.numberToConvert);
         String spinner1 = spinnerLeft.getSelectedItem().toString();
@@ -57,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Make sure you've selected currencies to convert",
                     Toast.LENGTH_SHORT).show();
         }
-        else if (spinner1 == spinner2) {
+        else if (spinner1.equals(spinner2)) {
             Toast.makeText(getApplicationContext(), "Hey jackass, " +
                     spinner1.substring(3) + " is already converted to " + spinner1.substring(3),
                     Toast.LENGTH_LONG).show();
@@ -66,64 +95,61 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Make sure you have a number to convert",
                     Toast.LENGTH_LONG).show();
         }
-        else
-        {
+        else {
             // We should be able to perform some valid maths
-            double myNum = Double.parseDouble(numToConvert.getText().toString());
+            double initialNum = Double.parseDouble(numToConvert.getText().toString());
+
             switch (spinner1) {
                 case USD:
-                    switch (spinner2)
-                    {
+                    switch (spinner2) {
                         case GBP:
-                            myNum = convertCurrency(myNum, 0.65d);
-                            displayConvertedAmt("£", myNum);
+                            convertCurrency(initialNum, 0.65d, "$", "£");
                             break;
                         case EUR:
-                            myNum = convertCurrency(myNum, 0.88d);
-                            displayConvertedAmt("€", myNum);
+                            convertCurrency(initialNum, 0.88d, "$", "€");
                             break;
                     }
                     break;
                 case GBP:
-                    switch (spinner2)
-                    {
+                    switch (spinner2) {
                         case USD:
-                            myNum = convertCurrency(myNum, 1.54d);
-                            displayConvertedAmt("$", myNum);
+                            convertCurrency(initialNum, 1.54d, "£", "$");
                             break;
                         case EUR:
-                            myNum = convertCurrency(myNum, 1.36d);
-                            displayConvertedAmt("€", myNum);
+                            convertCurrency(initialNum, 1.36d, "£", "€");
                             break;
                     }
                     break;
                 case EUR:
-                    switch (spinner2)
-                    {
+                    switch (spinner2) {
                         case USD:
-                            myNum = convertCurrency(myNum, 1.14d);
-                            displayConvertedAmt("$", myNum);
+                            convertCurrency(initialNum, 1.14d, "€", "$");
                             break;
                         case GBP:
-                            myNum = convertCurrency(myNum, 0.74d);
-                            displayConvertedAmt("£", myNum);
+                            convertCurrency(initialNum, 0.74d, "€", "£");
                             break;
                     }
                     break;
             }
         }
-
     }
 
-    public double convertCurrency(double convertingNum, double exchangeRate) {
-        double convertedAmount = 0d;
-        convertedAmount = convertingNum * exchangeRate;
-        return convertedAmount;
+    public void convertCurrency(double convertingNum, double exchangeRate, String initialSymbol,
+                                String exchangeSymbol) {
+        double convertedAmount = convertingNum * exchangeRate;
+        toastConvertedAmt(initialSymbol, convertedAmount);
+        updateRecentConversions(initialSymbol + convertingNum, exchangeSymbol + convertedAmount);
     }
 
-    public void displayConvertedAmt(String symbol, double myNum) {
+    public void toastConvertedAmt(String symbol, double myNum) {
         Toast.makeText(getApplicationContext(),
                 symbol + String.valueOf(myNum),
                 Toast.LENGTH_LONG).show();
+    }
+
+    public void updateRecentConversions(String initial, String converted){
+        // Test updating the Recent Conversions
+        arrRecentConversionsList.add(initial + " = " + converted);
+        recentConversionsAdapter.notifyDataSetChanged();
     }
 }

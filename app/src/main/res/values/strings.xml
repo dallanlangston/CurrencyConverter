@@ -1,9 +1,3 @@
 <resources>
     <string name="app_name">CurrencyConverter</string>
-    <string-array name="country_currencies">
-        <item>Select Currency</item>
-        <item>$ - Dollars (USD)</item>
-        <item>£ - Pounds (GBP)</item>
-        <item>€ - Euros (EUR)</item>
-    </string-array>
 </resources>
