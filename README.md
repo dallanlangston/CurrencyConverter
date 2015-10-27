@@ -1,7 +1,4 @@
 # SimpleCurrencyConverter
-Simple Currecny Converter used for educational purposes.
-
-# SimpleCurrencyConverter
 #### Incredible simple Currency Converter used for an Android class
 Simple Currecny Converter used for educational purposes.
 
