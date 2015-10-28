@@ -10,4 +10,4 @@ Make sure you:
 * have the most recent SDK updates
 * have GitHub for windows installed on your computer
 * have a GitHub login
-* forked this repo
+* have forked this repo
