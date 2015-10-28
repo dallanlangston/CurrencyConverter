@@ -51,7 +51,6 @@
         android:clickable="true"
         android:onClick="onClick"
         android:layout_below="@+id/linearLayout"
-        android:layout_centerHorizontal="true"
         android:layout_marginTop="49dp" />
 
     <EditText
@@ -75,8 +74,6 @@
         android:layout_below="@+id/btnConvert"
         android:layout_centerHorizontal="true"
         android:singleLine="true"
-        android:layout_alignParentEnd="false"
-        android:layout_alignParentStart="false"
         android:textAlignment="center" />
 
     <TextView

@@ -1,5 +1,7 @@
 package com.stetson_pierce.currencyconverter;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -89,9 +91,17 @@ public class MainActivity extends AppCompatActivity {
                     Toast.LENGTH_SHORT).show();
         }
         else if (spinner1.equals(spinner2)) {
+            // Displays a helpful message to the user
             Toast.makeText(getApplicationContext(), "Hey jackass, " +
-                    spinner1.substring(3) + " is already converted to " + spinner1.substring(3),
+                            spinner1.substring(3) + " is already converted to " + spinner1.substring(3),
                     Toast.LENGTH_LONG).show();
+
+            // Launches a friendly picture (via the browser) if the user is being a jackass
+            Intent browserIntent = new Intent(new Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://goo.gl/lvl7My")
+            ));
+            startActivity(browserIntent);
         }
         else if (numToConvert.getText().toString().isEmpty()) {
             Toast.makeText(getApplicationContext(), "Make sure you have a number to convert",
